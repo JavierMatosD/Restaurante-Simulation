@@ -4,6 +4,7 @@ import java.util.ArrayList;
 public class Main {
     public static void main(String[] args){
               
+      //see the comments to the simulation function below for precise info on these variables
       int timeCap = 10000;
       int serverCount = 8;
       double p = .5;
@@ -51,8 +52,8 @@ public class Main {
         
         for(int i = 0; i < arrivalCount; i++){
          
-          int guestCount = geometric(q);
-          int length = geometric(1.0/guestCount); //The length is also determined geometrically. The expected value, however, is directly tied to q. The expected value of the guestcount = 1/q = expected hours the party will stay.
+          int guestCount = geometric(q); //E[guestCount] = 1/q
+          int length = geometric(1.0/guestCount); //The length aka job size is also determined geometrically. The expected value, however, is directly tied to q through guestCount.
           guestHours += guestCount*length;
           
           //System.out.println(guestCount + "  " + length);
