@@ -5,15 +5,15 @@ public class Main {
     public static void main(String[] args){
               
       //see the comments to the simulation function below for precise info on these variables
-      int timeCap = 10000;
-      int serverCount = 8;
-      double p = .5;
+      int timeCap = 100000;
+      int serverCount = 5;
+      double p = .1;
       double q = .5;
       
       simulation(timeCap, serverCount, p, q);
       System.out.println("Theoretical expected guest hours rate: " + getExpectedGuestHoursRate(p,q));
       
-      // The expected number of guest hours generated per hour = (1/p)*((2-q/q^2). In other words, E[X] * E[Y^2] where X ~ Geometric(p) and Y ~ Geometric(q) 
+      // The expected number of guest hours generated per hour = (1/p)*((2-q/q^2). In other words, E[X] * E[Y]^2 where X ~ Geometric(p) and Y ~ Geometric(q) 
       // Crucially, however, if servers become overburdened during the course of the simulation they might slow down and no longer be able to keep up with the expected incoming load
     }
     
@@ -27,7 +27,8 @@ public class Main {
       int seatingDelay = 0;
       int serverDelay = 0;
       int departureCount = 0;
-      int guestHours = 0;
+      int totalGuestHours = 0;
+      int totalGuestCount = 0;
       
       Manager m = new Manager(serverCount); //initialize new restaurant
       int time = 0;
@@ -35,15 +36,13 @@ public class Main {
 
       while (time < timeCap){ //Stop simulation once enough minutes have passed
         
-        ArrayList<Table> departures = m.tick(time);
+        ArrayList<Table> departures = m.checkDepartures(time);
         
         for(int i = 0; i < departures.size(); i++){
           seatingDelay += departures.get(i).seatingDelay; //restaurant delay = delay in being seated upon arriving
           serverDelay += departures.get(i).serverDelay; //server delay = delay in being served due to over capacity server
           departureCount++;
         }
-        
-        //System.out.println(m.printRestaurantStatus(time));
         //System.out.println(time + " | Departures: " + departures);
         
         arrivalCount = geometric(p); // we could try subtracting one here so that it's possible that 0 tables arrive in a given hour
@@ -53,8 +52,10 @@ public class Main {
         for(int i = 0; i < arrivalCount; i++){
          
           int guestCount = geometric(q); //E[guestCount] = 1/q
-          int length = geometric(1.0/guestCount); //The length aka job size is also determined geometrically. The expected value, however, is directly tied to q through guestCount.
-          guestHours += guestCount*length;
+          int length = geometric(1.0/guestCount); //The length aka job size is also determined geometrically. The expected value, however, is directly tied to q through guestCount. E[Y^2]
+          
+          totalGuestHours += guestCount*length;
+          totalGuestCount += guestCount;
           
           //System.out.println(guestCount + "  " + length);
           m.tableArrival(guestCount, time, length); //generate a new party (aka table aka job).
@@ -62,14 +63,17 @@ public class Main {
         
         m.assignTables(time);
         
+        //System.out.println(m.printRestaurantStatus(time, 1));
+        
         time++;        
       }
       
-      System.out.println(m.printRestaurantStatus(time));
+      System.out.println(m.printRestaurantStatus(time, 0));
       
+      System.out.println("Abandoned Rate: " + (1.0*m.getAbandonedCount()/totalGuestCount));
       System.out.println("Seating delay: " + (1.0*seatingDelay/departureCount));
       System.out.println("Server delay: " + (1.0*serverDelay/departureCount));
-      System.out.println("Guest hours average: " + (1.0*guestHours/timeCap));
+      System.out.println("Guest hours average: " + (1.0*totalGuestHours/timeCap));
     }
     
     // ===================================
@@ -92,6 +96,7 @@ public class Main {
     
     public static double getExpectedGuestHoursRate(double p, double q){
      
-      return ((2.0-q)/Math.pow(q,2.0))*(1.0/p);
+     return ((2.0-q)/Math.pow(q,2.0))*(1.0/p);
+     //return (1.0/p)*(1.0/q)*(1.0/q);
     }
 }

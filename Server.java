@@ -17,7 +17,7 @@ public class Server{
     nextDeparture = -1;
   }
   
-  public ArrayList<Table> tick(int time){
+  public ArrayList<Table> checkDepartures(int time){
     
     ArrayList<Table> departures = new ArrayList<Table>();
     
@@ -25,6 +25,7 @@ public class Server{
       
       if(tables.get(i).sArrival+tables.get(i).length == time){
         departures.add(departTable(i));
+        i--;
       }
     }
     
@@ -33,16 +34,22 @@ public class Server{
   
   // ===================================
   // this method is called when a table is seated by a server
-  public void seatTable(Table t, int time){
+  // returns the number of abandoned guests. 0 if table seated successfully
+  public int seatTable(Table t, int time){
     
     double serverMultiplier = (1.0*t.guests + this.getGuestTotal())/serverCapacity;
     
     if(serverMultiplier < 1.0)
       serverMultiplier = 1.0;
     
-    t.seated(serverMultiplier,time);
-    tables.add(t);
-    jobCounter++; //Increment job counter
+    if(t.seated(serverMultiplier,time)){
+      tables.add(t);
+      jobCounter++; //Increment job counter
+      return 0;
+    }
+    else{
+      return t.guests; //return abandoned guest count if seating was unsuccessful
+    }
   }
   
   // ===================================
@@ -68,9 +75,26 @@ public class Server{
   // ===================================
   // All get methods
   
-  public String printServerStatus(){
+  public String printServerStatus(int mode){
    
-    return "Tables: " + getTableTotal() + " | Guests: " + getGuestTotal() + " / " + serverCapacity;
+    if(mode == 0){
+      return "Tables: " + getTableTotal() + " | Guests: " + getGuestTotal() + " / " + serverCapacity;
+    }
+    else if (mode == 1){
+      String s = ""; 
+      
+      s += "Tables: " + getTableTotal() + " | Guests: " + getGuestTotal() + " / " + serverCapacity + "\n\n";
+      
+      for(int i = 0; i < tables.size(); i++){
+       
+        s += i + " | Guests: " + tables.get(i).guests + " | Server Arrival: " + tables.get(i).sArrival + " | Length: " + tables.get(i).length + "\n";
+      }
+      
+      return s;
+    }
+    else{
+      return "error"; 
+    }
   }
   
   // =================================== 

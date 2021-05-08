@@ -6,6 +6,7 @@ public class Manager{
   
   private ArrayList<Server> servers;
   private Queue<Table> unseatedTables;
+  private int abandonedCount;
   
   // ===================================
   
@@ -29,12 +30,12 @@ public class Manager{
 
   // ===================================
   
-  public ArrayList<Table> tick(int time){
+  public ArrayList<Table> checkDepartures(int time){
     
     ArrayList<Table> allDepartures = new ArrayList<Table>();
     
     for(int i = 0; i < servers.size(); i++){
-      allDepartures.addAll(servers.get(i).tick(time));
+      allDepartures.addAll(servers.get(i).checkDepartures(time));
     }
         
     return allDepartures;
@@ -46,7 +47,7 @@ public class Manager{
   public void assignTables(int time){
       
     while(unseatedTables.size() > 0 && servers.get(getLeastBusyServerIndex()).getAvailableCapacity()>0)
-      servers.get(getLeastBusyServerIndex()).seatTable(unseatedTables.remove(),time);   
+      abandonedCount += servers.get(getLeastBusyServerIndex()).seatTable(unseatedTables.remove(),time);
     
     /*
     //This is another possible strategy where no server is ever overburdened, but it is vulnerable to massive backlog if new jobs are coming in too quickly 
@@ -86,7 +87,7 @@ public class Manager{
   
   // ===================================
   
-  public String printRestaurantStatus(int time){
+  public String printRestaurantStatus(int time, int mode){
     
     String s = "";
     
@@ -94,8 +95,10 @@ public class Manager{
     s += ("Unseated tables: " + unseatedTables.size() + "\n\n");
     
     for(int i = 0; i < servers.size(); i++){
-     
-      s += (servers.get(i).printServerStatus() + "\n");
+      
+      s += "=====\n";
+      s += "Server " + i + ":\n";
+      s += (servers.get(i).printServerStatus(mode) + "\n");
     }
     
     return s;
@@ -113,5 +116,10 @@ public class Manager{
   public Queue<Table> getUnseatedTables(){
    
     return unseatedTables;
+  }
+  
+  public int getAbandonedCount(){
+   
+    return abandonedCount;
   }
 }
