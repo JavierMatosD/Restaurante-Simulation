@@ -13,19 +13,19 @@ public class Server{
    * After this constructor is called, jobArrival may be called to simulate a job arrival.
    */
   public Server() {
-    tables        = new ArrayList<Table>();
-    busy          = false;
-    jobCounter    = 0;
+    tables = new ArrayList<Table>();
+    busy = false;
+    jobCounter = 0;
     nextDeparture = -1;
   }
   
-  /**
+    /**
    * Method is an event that removes and returns all the tables who are done eating within the server.
    * Method is called by Manager.tick(int time).
    * @param time = current time
    * @return list of tables departed from server
    */
-  public ArrayList<Table> tick(int time){
+  public ArrayList<Table> checkDepartures(int time){
     
     ArrayList<Table> departures = new ArrayList<Table>();
     
@@ -33,28 +33,31 @@ public class Server{
       
       if(tables.get(i).sArrival + tables.get(i).length == time){
         departures.add(departTable(i));
+        i--;
       }
     }
     
     return departures;
   }
   
-
-  /**
-   * Method handles a tables arrival
-   * @param t    = Table to be seated
-   * @param time = Current time
-   */
-  public void seatTable(Table t, int time){
+  // ===================================
+  // this method is called when a table is seated by a server
+  // returns the number of abandoned guests. 0 if table seated successfully
+  public int seatTable(Table t, int time){
     
     double serverMultiplier = (1.0*t.guests + this.getGuestTotal())/serverCapacity;
     
     if(serverMultiplier < 1.0)
       serverMultiplier = 1.0;
     
-    t.seated(serverMultiplier,time);
-    tables.add(t);
-    jobCounter++; //Increment job counter
+    if(t.seated(serverMultiplier,time)){
+      tables.add(t);
+      jobCounter++; //Increment job counter
+      return 0;
+    }
+    else{
+      return t.guests; //return abandoned guest count if seating was unsuccessful
+    }
   }
   
 
@@ -81,16 +84,29 @@ public class Server{
     return t;
   }
   
-
-  //                                     Getters and utility methods
-  // =========================================================================================================
-
-  /**
-   * Method calls Server.getTableTotal() and Server.getGuesTotal()
-   * @return The number of tables, guests, and server capacity
-   */
-  public String printServerStatus(){
-    return "Tables: " + getTableTotal() + " | Guests: " + getGuestTotal() + " / " + serverCapacity;
+  // ===================================
+  // All get methods
+  
+  public String printServerStatus(int mode){
+   
+    if(mode == 0){
+      return "Tables: " + getTableTotal() + " | Guests: " + getGuestTotal() + " / " + serverCapacity;
+    }
+    else if (mode == 1){
+      String s = ""; 
+      
+      s += "Tables: " + getTableTotal() + " | Guests: " + getGuestTotal() + " / " + serverCapacity + "\n\n";
+      
+      for(int i = 0; i < tables.size(); i++){
+       
+        s += i + " | Guests: " + tables.get(i).guests + " | Server Arrival: " + tables.get(i).sArrival + " | Length: " + tables.get(i).length + "\n";
+      }
+      
+      return s;
+    }
+    else{
+      return "error"; 
+    }
   }
   
   /**

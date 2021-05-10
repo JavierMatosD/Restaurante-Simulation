@@ -17,7 +17,6 @@ public class Main {
        * to keep up with the expected incoming load.
        */
       System.out.println("Theoretical expected guest hours rate: " + getExpectedGuestHoursRate(p,q));
-
     }
     
 
@@ -46,7 +45,7 @@ public class Main {
       // Simulation stops when enough minutes have passed
       while (time < timeCap) {
 
-        ArrayList<Table> departures = m.tick(time);
+        ArrayList<Table> departures = m.checkDepartures(time);
 
         for (int i = 0; i < departures.size(); i++) {
 

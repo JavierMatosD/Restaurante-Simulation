@@ -6,6 +6,7 @@ public class Manager{
   
   private ArrayList<Server> servers;
   private Queue<Table> unseatedTables;
+  private int abandonedCount;
   
   /**
    * Constructor initializes a list of Servers and a queue for unseated Tables
@@ -32,18 +33,19 @@ public class Manager{
     unseatedTables.add(new Table(guests, time, length));
   }
 
- /**
+  // ===================================
+/**
  * Method is an event that removes and returns all the tables who are done eating.
  * Method is called by Main.simulation(int timeCap, int serverCount, double p, double q).
  * @param time - current time
  * @return list of tables who have departed
  */ 
-  public ArrayList<Table> tick(int time){
+  public ArrayList<Table> checkDepartures(int time){
     
     ArrayList<Table> allDepartures = new ArrayList<Table>();
     
     for(int i = 0; i < servers.size(); i++){
-      allDepartures.addAll(servers.get(i).tick(time));
+      allDepartures.addAll(servers.get(i).checkDepartures(time));
     }
         
     return allDepartures;
@@ -57,8 +59,9 @@ public class Manager{
   public void assignTables(int time){
       
     while(unseatedTables.size() > 0 && servers.get(getLeastBusyServerIndex()).getAvailableCapacity()>0)
-      servers.get(getLeastBusyServerIndex()).seatTable(unseatedTables.remove(), time);
-  
+      abandonedCount += servers.get(getLeastBusyServerIndex()).seatTable(unseatedTables.remove(),time);
+    
+    /*
     //This is another possible strategy where no server is ever overburdened, but it is vulnerable to massive backlog if new jobs are coming in too quickly 
     /*
     int i = 0;
@@ -98,22 +101,25 @@ public class Manager{
     return leastBusy;
   }
   
-  /**
+  // ===================================
+    /**
    * Returns the time, number of unseated tables, and the server status.
    * Method calls printServerStatus() to retrieve the status of all the servers.
    * @param time
    * @return String
    */
-  public String printRestaurantStatus(int time) {
-
+  public String printRestaurantStatus(int time, int mode){
+    
     String s = "";
 
     s += ("===================\nTime:" + time + "\n");
     s += ("Unseated tables: " + unseatedTables.size() + "\n\n");
-
-    for (int i = 0; i < servers.size(); i++) {
-
-      s += (servers.get(i).printServerStatus() + "\n");
+    
+    for(int i = 0; i < servers.size(); i++){
+      
+      s += "=====\n";
+      s += "Server " + i + ":\n";
+      s += (servers.get(i).printServerStatus(mode) + "\n");
     }
 
     return s;
@@ -131,5 +137,10 @@ public class Manager{
    */
   public Queue<Table> getUnseatedTables(){
     return unseatedTables;
+  }
+  
+  public int getAbandonedCount(){
+   
+    return abandonedCount;
   }
 }
