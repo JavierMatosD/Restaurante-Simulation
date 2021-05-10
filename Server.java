@@ -5,25 +5,33 @@ public class Server{
   private final int serverCapacity = 15; //hard coded server capacity before service efficiency begins decreasing
   private ArrayList<Table> tables;
   private boolean busy;
-  private int jobCounter;
-  private int nextDeparture;
+  private int jobCounter, nextDeparture;
   
-  // ===================================
-  // Constructor which initializes an empty server with no jobs yet sent. After this constructor is called, jobArrival may be called to simulate a job arrival.
-  public Server(){
-    tables = new ArrayList<Table>();
-    busy = false;
-    jobCounter = 0;
+
+  /**
+   * Constructor initializes an empty server with no jobs yet sent.
+   * After this constructor is called, jobArrival may be called to simulate a job arrival.
+   */
+  public Server() {
+    tables        = new ArrayList<Table>();
+    busy          = false;
+    jobCounter    = 0;
     nextDeparture = -1;
   }
   
+  /**
+   * Method is an event that removes and returns all the tables who are done eating within the server.
+   * Method is called by Manager.tick(int time).
+   * @param time = current time
+   * @return list of tables departed from server
+   */
   public ArrayList<Table> tick(int time){
     
     ArrayList<Table> departures = new ArrayList<Table>();
     
     for(int i = 0; i < tables.size(); i++){
       
-      if(tables.get(i).sArrival+tables.get(i).length == time){
+      if(tables.get(i).sArrival + tables.get(i).length == time){
         departures.add(departTable(i));
       }
     }
@@ -31,8 +39,12 @@ public class Server{
     return departures;
   }
   
-  // ===================================
-  // this method is called when a table is seated by a server
+
+  /**
+   * Method handles a tables arrival
+   * @param t    = Table to be seated
+   * @param time = Current time
+   */
   public void seatTable(Table t, int time){
     
     double serverMultiplier = (1.0*t.guests + this.getGuestTotal())/serverCapacity;
@@ -45,8 +57,12 @@ public class Server{
     jobCounter++; //Increment job counter
   }
   
-  // ===================================
-  //departure
+
+  /**
+   * Method handles a tables departure
+   * @param index of the departing table
+   * @return The newly departed table
+   */
   public Table departTable(int index){
     
    Table t = tables.remove(index);
@@ -65,54 +81,63 @@ public class Server{
     return t;
   }
   
-  // ===================================
-  // All get methods
-  
+
+  //                                     Getters and utility methods
+  // =========================================================================================================
+
+  /**
+   * Method calls Server.getTableTotal() and Server.getGuesTotal()
+   * @return The number of tables, guests, and server capacity
+   */
   public String printServerStatus(){
-   
     return "Tables: " + getTableTotal() + " | Guests: " + getGuestTotal() + " / " + serverCapacity;
   }
   
-  // =================================== 
-  
+  /**
+   * @return Total number of tables
+   */
   public int getTableTotal(){
-    
     return tables.size();
   }
   
-  // Calculates total guests being served across all tables (i.e. sum and return all job sizes)
+  /**
+   * @return Total guests being served across all tables (i.e. sum and return all job sizes)
+   */
   public int getGuestTotal(){
     int size = 0;
     
     for(int i = 0; i < tables.size(); i++){
-
         size += tables.get(i).guests;
     }
     
     return size;
   }
   
-  // ===================================
-  
-  public int getAvailableCapacity(){
-    
-    return serverCapacity-getGuestTotal();
+  /**
+   * Method calls Server.getGuestTotal()
+   * @return The servers' available capacity
+   */
+  public int getAvailableCapacity() {
+    return serverCapacity - getGuestTotal();
   }
   
-  // ===================================
-  
+  /**
+   * @return The jobCounter
+   */
   public int getJobCounter(){
    return jobCounter; 
   }
   
-  // ===================================
-  
-  public boolean isBusy(){
+  /**
+   * @return True if the server is busy
+   */
+  public boolean isBusy() {
     return busy;
   }
   
-  // ===================================
-  
+  /**
+   * @return The number of tables
+   */
   public int tableCount(){
    return tables.size(); 
   }

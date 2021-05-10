@@ -7,8 +7,10 @@ public class Manager{
   private ArrayList<Server> servers;
   private Queue<Table> unseatedTables;
   
-  // ===================================
-  
+  /**
+   * Constructor initializes a list of Servers and a queue for unseated Tables
+   * @param serverCount
+   */
   public Manager(int serverCount){
         
     servers = new ArrayList<Server>();
@@ -20,15 +22,22 @@ public class Manager{
     unseatedTables = new LinkedList<Table>();
   }
   
-  // ===================================
-  
-  public void tableArrival(int guests, int time, int length){ //a new party arrives. We generate a table object for them but do not necessarily seat them yet
-    //System.out.println("New table arrival: " + guests);
+  /**
+   * When a new party arrives, method generates a table object. Tables are seated according to assignTables(int).
+   * @param guests is the number of guests.
+   * @param time   is the current time.
+   * @param length is the length of time party will stay.
+   */
+  public void tableArrival(int guests, int time, int length){
     unseatedTables.add(new Table(guests, time, length));
   }
 
-  // ===================================
-  
+ /**
+ * Method is an event that removes and returns all the tables who are done eating.
+ * Method is called by Main.simulation(int timeCap, int serverCount, double p, double q).
+ * @param time - current time
+ * @return list of tables who have departed
+ */ 
   public ArrayList<Table> tick(int time){
     
     ArrayList<Table> allDepartures = new ArrayList<Table>();
@@ -40,16 +49,18 @@ public class Manager{
     return allDepartures;
   }
   
-  // ===================================
-  //Set table assignment strategy to test in this function. Basic greedy function currently which immediately assigns table to least busy server.
-  
+  /**
+   * Assigns incoming parties to servers.
+   * Current implementation immediately assigns tables to the least busy server.
+   * @param time - current time
+   */
   public void assignTables(int time){
       
     while(unseatedTables.size() > 0 && servers.get(getLeastBusyServerIndex()).getAvailableCapacity()>0)
-      servers.get(getLeastBusyServerIndex()).seatTable(unseatedTables.remove(),time);   
-    
-    /*
+      servers.get(getLeastBusyServerIndex()).seatTable(unseatedTables.remove(), time);
+  
     //This is another possible strategy where no server is ever overburdened, but it is vulnerable to massive backlog if new jobs are coming in too quickly 
+    /*
     int i = 0;
     
     while(i < servers.size() && unseatedTables.size() > 0){
@@ -68,50 +79,57 @@ public class Manager{
     */
   }
   
-  // ===================================
-  // Helper method returning index of least burdened server
-  
+  /**
+   * Utility method called by assignTables(int) and returns the index of the least burdened server.
+   * @return int
+   */
   private int getLeastBusyServerIndex(){
     
     int leastBusy = 0;
     
-    for(int i = 0; i < servers.size(); i++){
-      
-      if(servers.get(i).getAvailableCapacity() > servers.get(leastBusy).getAvailableCapacity()){
+    for (int i = 0; i < servers.size(); i++) {
+
+      int currentServerCapacity   = servers.get(i).getAvailableCapacity();
+      int leastBusyServerCapacity = servers.get(leastBusy).getAvailableCapacity();
+
+      if(currentServerCapacity > leastBusyServerCapacity)
         leastBusy = i;
-      }
     } 
     return leastBusy;
   }
   
-  // ===================================
-  
-  public String printRestaurantStatus(int time){
-    
+  /**
+   * Returns the time, number of unseated tables, and the server status.
+   * Method calls printServerStatus() to retrieve the status of all the servers.
+   * @param time
+   * @return String
+   */
+  public String printRestaurantStatus(int time) {
+
     String s = "";
-    
+
     s += ("===================\nTime:" + time + "\n");
     s += ("Unseated tables: " + unseatedTables.size() + "\n\n");
-    
-    for(int i = 0; i < servers.size(); i++){
-     
+
+    for (int i = 0; i < servers.size(); i++) {
+
       s += (servers.get(i).printServerStatus() + "\n");
     }
-    
+
     return s;
   }
   
-  // ===================================
-  
-  public ArrayList<Server> getServers(){
-   
+  /**
+   * @return list of servers
+   */
+  public ArrayList<Server> getServers() {
     return servers;
   }
   
-  // ===================================
-  
+  /**
+   * @return queue of unseatedTables
+   */
   public Queue<Table> getUnseatedTables(){
-   
     return unseatedTables;
   }
 }
