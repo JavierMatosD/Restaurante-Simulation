@@ -39,9 +39,13 @@ public class Server{
     return departures;
   }
   
-  // ===================================
-  // this method is called when a table is seated by a server
-  // returns the number of abandoned guests. 0 if table seated successfully
+
+  /**
+   * this method is called when a table is seated by a server
+   * @param t = Table to be seated
+   * @param time = current time
+   * @return The number of abandoned guests
+   */
   public int seatTable(Table t, int time){
     
     double serverMultiplier = (1.0*t.guests + this.getGuestTotal())/serverCapacity;
@@ -83,7 +87,7 @@ public class Server{
     return t;
   }
   
-  //                                              Getters
+  //                                              Getters and Utility methods
   // =================================================================================================
   public String printServerStatus(int mode){
    
