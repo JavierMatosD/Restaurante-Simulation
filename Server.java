@@ -13,15 +13,14 @@ public class Server{
    * After this constructor is called, jobArrival may be called to simulate a job arrival.
    */
   public Server() {
-    tables = new ArrayList<Table>();
-    busy = false;
-    jobCounter = 0;
+    tables        = new ArrayList<Table>();
+    busy          = false;
+    jobCounter    = 0;
     nextDeparture = -1;
   }
   
     /**
    * Method is an event that removes and returns all the tables who are done eating within the server.
-   * Method is called by Manager.tick(int time).
    * @param time = current time
    * @return list of tables departed from server
    */
@@ -84,9 +83,8 @@ public class Server{
     return t;
   }
   
-  // ===================================
-  // All get methods
-  
+  //                                              Getters
+  // =================================================================================================
   public String printServerStatus(int mode){
    
     if(mode == 0){

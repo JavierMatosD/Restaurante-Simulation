@@ -36,7 +36,6 @@ public class Manager{
   // ===================================
 /**
  * Method is an event that removes and returns all the tables who are done eating.
- * Method is called by Main.simulation(int timeCap, int serverCount, double p, double q).
  * @param time - current time
  * @return list of tables who have departed
  */ 
@@ -103,11 +102,12 @@ public class Manager{
   
   // ===================================
     /**
-   * Returns the time, number of unseated tables, and the server status.
-   * Method calls printServerStatus() to retrieve the status of all the servers.
-   * @param time
-   * @return String
-   */
+    * Returns the time, number of unseated tables, and the server status.
+    * Method calls printServerStatus() to retrieve the status of all the servers.
+    * @param time
+    * @param mode
+    * @return String
+    */
   public String printRestaurantStatus(int time, int mode){
     
     String s = "";

@@ -81,7 +81,7 @@ public class Main {
       }
       
       // Print Data
-      System.out.println(m.printRestaurantStatus(time));
+      System.out.println(m.printRestaurantStatus(time, 0));
       System.out.println("Seating delay: "       + (1.0*seatingDelay/departureCount));
       System.out.println("Server delay: "        + (1.0*serverDelay/departureCount));
       System.out.println("Guest hours average: " + (1.0*guestHours/timeCap));
