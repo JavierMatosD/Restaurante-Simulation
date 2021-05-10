@@ -58,4 +58,4 @@ Implementing different strategies for:
 - Reducing seating and serving delay
 
 <br>
-We are currently conducting experiments and amalgamating.data
+We are currently conducting experiments and amalgamating data
