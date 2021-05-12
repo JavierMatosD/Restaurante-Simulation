@@ -80,6 +80,18 @@ public class Manager{
     }
     */
   }
+   
+  /**
+     * Assigns incoming parties to servers.
+     * Assigns tables to random server.
+     * @param time - current time
+     */
+    public void assignTablesRandom(int time){
+      while(unseatedTables.size() > 0){
+        int randomServerIndex= (int) (Math.random()*(servers.size()-0));
+        abandonedCount += servers.get(randomServerIndex).seatTable(unseatedTables.remove(),time);
+      }
+  }
   
   /**
    * Utility method called by assignTables(int) and returns the index of the least burdened server.
