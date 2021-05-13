@@ -5,10 +5,15 @@ public class Main {
     public static void main(String[] args){
               
       int timeCap     = 10000;
-      int serverCount = 8;
-      double p        = 0.2;
-      double q        = 0.5;
+      int serverCount = 10;
+      double p        = 0.05;
+      double q        = 0.50;
       
+      // Maximum capacity for restaurant is 15 guests * 8 servers = 120
+      // Max expected guest hours occur when q = 0.5 and p = 0.05
+      // while (p > .05) {
+        
+      // }
       simulation(timeCap, serverCount, p, q);
 
       /**
@@ -24,19 +29,19 @@ public class Main {
      * Called by main to run the restaurant simulation
      * @param timeCap is number of hours to run simulation for
      * @param serverCount is number of servers in the restaurant
-     * @param p is used by Main.geometric(double, double) to determine the number of jobs arriving per hour.
-     *          As 'p' decreases, the number of jobs arriving per hour increases
-     * @param q is used by Main.geometric(double, double) to determine the number of guests in each table (aka job)
-     *          As 'q' decreases, the number of guests arriving in each table increases
+     * @param p : determines the job arrival rate. <br>
+     *            As 'p' decreases, the number of jobs arriving per hour increases.
+     * @param q : determines the number of guests per table (aka job size). <br>
+     *            As 'q' decreases, the number of guests arriving in each table increases
      * @return void
      */
     public static void simulation(int timeCap, int serverCount, double p, double q){
       
-      int seatingDelay   = 0;
-      int serverDelay    = 0;
-      int departureCount = 0;
-      int guestHours     = 0;
-      int time           = 0;
+      int seatingDelay    = 0;
+      int serverDelay     = 0;
+      int departureCount  = 0;
+      int guestHours      = 0;
+      int time            = 0;
       int totalGuestCount = 0;
       int arrivalCount;
 
@@ -72,15 +77,15 @@ public class Main {
           /*if(guestCount > 30){
             System.out.println("Big one + " + guestCount); 
           }*/
-          int length     = geometric(1.0 / guestCount);
-          guestHours    += guestCount * length;
+          int length       = geometric(1.0 / guestCount);
+          guestHours      += guestCount * length;
           totalGuestCount += guestCount;
 
           // Generate a new party (aka table aka job).
           m.tableArrival(guestCount, time, length);
         }
 
-        m.assignTables(time, 4);
+        m.assignTables(time, 1);
 
         time++;
       }
