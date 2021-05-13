@@ -6,7 +6,7 @@ public class Main {
               
       int timeCap     = 10000;
       int serverCount = 8;
-      double p        = 0.5;
+      double p        = 0.2;
       double q        = 0.5;
       
       simulation(timeCap, serverCount, p, q);
@@ -75,7 +75,7 @@ public class Main {
           m.tableArrival(guestCount, time, length);
         }
 
-        m.assignTables(time);
+        m.assignTables(time, 4);
 
         time++;
       }

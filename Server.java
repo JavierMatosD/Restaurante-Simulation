@@ -41,7 +41,9 @@ public class Server{
   
 
   /**
-   * this method is called when a table is seated by a server
+   * Method seats a table.
+   * <p>
+   * This method is called by Manager.assignTables(time)
    * @param t = Table to be seated
    * @param time = current time
    * @return The number of abandoned guests
@@ -117,7 +119,7 @@ public class Server{
   public int getTableTotal(){
     return tables.size();
   }
-  
+
   /**
    * @return Total guests being served across all tables (i.e. sum and return all job sizes)
    */
