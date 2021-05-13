@@ -6,7 +6,7 @@ public class Main {
               
       int timeCap     = 10000;
       int serverCount = 8;
-      double p        = 0.5;
+      double p        = 0.2;
       double q        = 0.2;
       
       simulation(timeCap, serverCount, p, q);
@@ -69,9 +69,9 @@ public class Main {
          */
         for (int i = 0; i < arrivalCount; i++) {
           int guestCount = geometric(q);
-          if(guestCount > 30){
+          /*if(guestCount > 30){
             System.out.println("Big one + " + guestCount); 
-          }
+          }*/
           int length     = geometric(1.0 / guestCount);
           guestHours    += guestCount * length;
           totalGuestCount += guestCount;
