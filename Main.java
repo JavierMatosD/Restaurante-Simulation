@@ -4,6 +4,7 @@ import java.util.ArrayList;
 public class Main {
     public static void main(String[] args){
               
+      int mode        = 4;
       int timeCap     = 10000;
       int serverCount = 10;
       double p        = 0.05;
@@ -27,6 +28,7 @@ public class Main {
 
     /**
      * Called by main to run the restaurant simulation
+     * @param mode is the table assignment strategy the manager uses
      * @param timeCap is number of hours to run simulation for
      * @param serverCount is number of servers in the restaurant
      * @param p : determines the job arrival rate. <br>
@@ -35,7 +37,7 @@ public class Main {
      *            As 'q' decreases, the number of guests arriving in each table increases
      * @return void
      */
-    public static void simulation(int timeCap, int serverCount, double p, double q){
+    public static void simulation(int mode, int timeCap, int serverCount, double p, double q){
       
       int seatingDelay    = 0;
       int serverDelay     = 0;
@@ -85,7 +87,7 @@ public class Main {
           m.tableArrival(guestCount, time, length);
         }
 
-        m.assignTables(time, 1);
+        m.assignTables(time, mode);
 
         time++;
       }
