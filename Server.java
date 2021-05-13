@@ -2,7 +2,7 @@ import java.util.ArrayList;
 
 public class Server{
  
-  private final int serverCapacity = 15; //hard coded server capacity before service efficiency begins decreasing
+  private final int serverCapacity = 10; //hard coded server capacity before service efficiency begins decreasing
   private ArrayList<Table> tables;
   private boolean busy;
   private int jobCounter, nextDeparture;

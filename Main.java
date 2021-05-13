@@ -4,12 +4,13 @@ import java.util.ArrayList;
 public class Main {
     public static void main(String[] args){
               
+      int mode = 4;
       int timeCap     = 10000;
-      int serverCount = 8;
-      double p        = 0.2;
+      int serverCount = 10;
+      double p        = 0.08;
       double q        = 0.5;
       
-      simulation(timeCap, serverCount, p, q);
+      simulation(mode, timeCap, serverCount, p, q);
 
       /**
        * The expected number of guest hours generated per hour = (1/p)*((2-q/q^2). In other words, E[X] * E[Y^2] where X ~ Geometric(p) and Y ~ Geometric(q).
@@ -22,6 +23,7 @@ public class Main {
 
     /**
      * Called by main to run the restaurant simulation
+     * @param mode is the table assignment strategy the manager uses
      * @param timeCap is number of hours to run simulation for
      * @param serverCount is number of servers in the restaurant
      * @param p is used by Main.geometric(double, double) to determine the number of jobs arriving per hour.
@@ -30,7 +32,7 @@ public class Main {
      *          As 'q' decreases, the number of guests arriving in each table increases
      * @return void
      */
-    public static void simulation(int timeCap, int serverCount, double p, double q){
+    public static void simulation(int mode, int timeCap, int serverCount, double p, double q){
       
       int seatingDelay   = 0;
       int serverDelay    = 0;
@@ -80,7 +82,7 @@ public class Main {
           m.tableArrival(guestCount, time, length);
         }
 
-        m.assignTables(time, 4);
+        m.assignTables(time, mode);
 
         time++;
       }

@@ -70,6 +70,9 @@ public class Manager{
       case 3:
         assignTablesInOrder(time);
         break;
+      case 4:
+        assignTablesInstantly(time);
+        break;
       default:
         break;
     }
@@ -77,14 +80,24 @@ public class Manager{
   }
   
   /**
-   * Assigns tables to the least busy server
+   * Assigns tables to the least busy server even if all servers are at full capacity.
+   * No seating delay and no abandons, but at the potential cost of server delay
    * @param time
    */
   public void assignTablesLeastBusy(int time) {
       while (unseatedTables.size() > 0 && servers.get(getLeastBusyServerIndex()).getAvailableCapacity() > 0)
       abandonedCount += servers.get(getLeastBusyServerIndex()).seatTable(unseatedTables.remove(), time);
   }
-   
+  
+  /**
+   * Assigns tables to the least busy server
+   * @param time
+   */
+  public void assignTablesInstantly(int time) {
+    while (unseatedTables.size() > 0)
+      abandonedCount += servers.get(getLeastBusyServerIndex()).seatTable(unseatedTables.remove(), time);
+  }
+  
   /**
      * Assigns incoming parties to servers. The method is called by Manager.assignTables(int time)
      * <p>
