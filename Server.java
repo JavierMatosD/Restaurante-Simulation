@@ -58,7 +58,7 @@ public class Server{
     if(t.seated(serverMultiplier,time)){
       tables.add(t);
       jobCounter++; //Increment job counter
-      return 0;
+      return 0; //return 0 if the table was seated successfully, meaning 0 abandoned guests
     }
     else{
       return t.guests; //return abandoned guest count if seating was unsuccessful

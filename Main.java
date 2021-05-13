@@ -37,6 +37,7 @@ public class Main {
       int departureCount = 0;
       int guestHours     = 0;
       int time           = 0;
+      int totalGuestCount = 0;
       int arrivalCount;
 
       //initialize new restaurant
@@ -68,8 +69,12 @@ public class Main {
          */
         for (int i = 0; i < arrivalCount; i++) {
           int guestCount = geometric(q);
+          /*if(guestCount > 30){
+            System.out.println("Big one + " + guestCount); 
+          }*/
           int length     = geometric(1.0 / guestCount);
           guestHours    += guestCount * length;
+          totalGuestCount += guestCount;
 
           // Generate a new party (aka table aka job).
           m.tableArrival(guestCount, time, length);
@@ -82,6 +87,7 @@ public class Main {
       
       // Print Data
       System.out.println(m.printRestaurantStatus(time, 0));
+      System.out.println("Abandoned rate: " + (1.0*m.getAbandonedCount()/totalGuestCount));
       System.out.println("Seating delay: "       + (1.0*seatingDelay/departureCount));
       System.out.println("Server delay: "        + (1.0*serverDelay/departureCount));
       System.out.println("Guest hours average: " + (1.0*guestHours/timeCap));
