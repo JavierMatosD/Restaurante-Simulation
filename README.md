@@ -17,6 +17,8 @@ To run the simulation open terminal within the project directory and run the fol
 - javac \*.java
 - java Main
 
+Note that completion time may be upwards of one minute.
+
 The output will look similar to the following: <br>
 Time: 10000 <br>
 Unseated tables: 0 <br>
