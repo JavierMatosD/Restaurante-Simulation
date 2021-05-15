@@ -1,5 +1,6 @@
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Random;
 import java.util.ArrayList;
 
 public class Manager{
@@ -56,7 +57,9 @@ public class Manager{
    * @param mode : Assignment Strategy [1-3]. <br>
    *               1. Assigns tables to the least busy server. <br>
    *               2. Assigns tables randomly. <br>
-   *               3. Assigns tables in order, skipping overburdened servers
+   *               3. Assigns tables in order, skipping overburdened servers <br>
+   *               4. Assign tables instantly <br>
+   *               5. covidStrategy
    * @param time - Current time
    */
   public void assignTables(int time, int mode) {
@@ -73,6 +76,9 @@ public class Manager{
       case 4:
         assignTablesInstantly(time);
         break;
+      case 5:
+        covidStrategy(time);
+        break;
       default:
         break;
     }
@@ -80,6 +86,7 @@ public class Manager{
   }
   
   /**
+   * Happy Customer AND Happy Server Strategy <p>
    * Assigns tables to the least busy server even if all servers are at full capacity.
    * No seating delay and no abandons, but at the potential cost of server delay
    * @param time
@@ -90,7 +97,7 @@ public class Manager{
   }
   
   /**
-   * Assigns tables to the least busy server
+   * Happy Customer Strategy Assigns tables to the least busy server
    * @param time
    */
   public void assignTablesInstantly(int time) {
@@ -99,9 +106,8 @@ public class Manager{
   }
   
   /**
-     * Assigns incoming parties to servers. The method is called by Manager.assignTables(int time)
-     * <p>
-     * Assigns tables to servers randomly.
+     * Random Assignment Strategy <p>
+     * Assigns incoming parties randomly to servers. The method is called by Manager.assignTables(int time)
      * @param time - current time
      */
   public void assignTablesRandom(int time) {
@@ -112,32 +118,102 @@ public class Manager{
   }
   
   /**
-   * Strategy to assign tables to servers in order. 
-   * The method is called by Manager.assignTable(int time)
-   * <p>
-   * Skips over servers that are overburdened.
+   * Busy Servers Strategy to assign tables to servers in order. 
+   * The method is called by Manager.assignTable(int time).
    * @param time
    */
   public void assignTablesInOrder(int time) {
-    for (int i = 0; i < servers.size(); i++) {
-        
-        // Skip if server is at capacity
-        if (servers.get(i).getAvailableCapacity() < 0) {
-          i++;
-        }
-        
-        // Cycle back to first server
-        if (i + 1 > servers.size()) {
-          i = 0;
-        }
+    int i = 0;
+    while (!unseatedTables.isEmpty()) {
+      // If on the last server cycle back to first
+      i = (i >= servers.size() - 1) ? 0 : i + 1;
+      abandonedCount += servers.get(i).seatTable(unseatedTables.remove(), time);
+    }
+  }
+  
+  /**
+   * Covid Strategy <p>
+   * Assigns tables to servers but servers cannot become overburdened. Parties/Tables larger than the server capacity
+   * will be given the choice to be split or to leave. 
+   * <p>
+   * Tables will stay with a 50% chance if their party can be split between two servers. Else they abandon
+   * @param time
+   */
+  public void covidStrategy(int time) {
 
-        // If there are still unseated tables then seat them
-        if (unseatedTables.size() > 0){
-          abandonedCount += servers.get(i).seatTable(unseatedTables.remove(), time);
-        } else {
+    while (!unseatedTables.isEmpty()) 
+    {
+      int leastBusyServerCap = servers.get(getLeastBusyServerIndex()).getAvailableCapacity();
+      int numGuest           = unseatedTables.peek().guests;
+
+      // if the number of guest is larger than the least busy servers available capacity
+      // Check if they can be split
+      if (numGuest > leastBusyServerCap) 
+      {
+        int secondLeastCapacity = servers.get(getSecondLeastBusyServer()).getAvailableCapacity();
+
+        // If the number of guests is more than two servers can handle
+        if (numGuest > leastBusyServerCap + secondLeastCapacity) 
+        {
+          abandonedCount += numGuest;
+          unseatedTables.remove();
           break;
         }
+
+        // If the number of guest can't be split among two servers they abandon
+        if (numGuest % (leastBusyServerCap + secondLeastCapacity) != 0) 
+        {
+          abandonedCount += numGuest;
+          unseatedTables.remove();
+        // else offer a split
+        } else 
+        {
+         boolean abandon = new Random().nextBoolean();
+
+          // They chose to leave
+          if (abandon)
+          {
+            abandonedCount += numGuest;
+            unseatedTables.remove();
+            // They chose to stay
+          } else 
+          {
+            numGuest -= leastBusyServerCap;
+            Table table1 = new Table(leastBusyServerCap, time, Main.geometric(1.0 / leastBusyServerCap));
+            Table table2 = new Table(numGuest, time, Main.geometric(1.0 / numGuest));
+            abandonedCount += servers.get(getLeastBusyServerIndex()).seatTable(table1, time);
+            abandonedCount += servers.get(getSecondLeastBusyServer()).seatTable(table2, time);
+            unseatedTables.remove();
+          }
+        }
+      } else if (leastBusyServerCap > 0)
+      {
+         abandonedCount += servers.get(getLeastBusyServerIndex()).seatTable(unseatedTables.remove(), time);
+      }
+     
     }
+  }
+
+  private int getSecondLeastBusyServer() {
+    int leastBusyIndex = getLeastBusyServerIndex();
+
+    int secondLeastCapacity = Integer.MAX_VALUE;
+    int secondLeastIndex = 0;
+    for (int i = 0; i < servers.size(); i++) 
+    {
+      // Skip if server is least busy
+      if (i == leastBusyIndex) 
+        i++;
+        if (i >= servers.size()) 
+          break;
+      int currentServerCapacity = servers.get(i).getAvailableCapacity();
+
+      if (currentServerCapacity < secondLeastCapacity) {
+        secondLeastCapacity = currentServerCapacity;
+        secondLeastIndex    = i;
+      }
+    }
+    return secondLeastIndex;
   }
   /**
    * Utility method called by assignTables(int) and returns the index of the least burdened server.

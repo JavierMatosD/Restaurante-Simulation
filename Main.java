@@ -15,6 +15,7 @@ public class Main {
       ArrayList<Double[]> strat2Data = new ArrayList<>();
       ArrayList<Double[]> strat3Data = new ArrayList<>();
       ArrayList<Double[]> strat4Data = new ArrayList<>();
+      ArrayList<Double[]> strat5Data = new ArrayList<>();
 
       int pIndex            = 0;
       int seatingDelayIndex = 1;
@@ -25,10 +26,11 @@ public class Main {
       FileWriter fWriter_2 = null;
       FileWriter fWriter_3 = null;
       FileWriter fWriter_4 = null;
+      FileWriter fWriter_5 = null;
 
-      int numSimulations = 100;
+      int numSimulations = 5;
       // Run simulation for all 4 strategies
-      while (mode <= 4) {
+      while (mode <= 5) {
         p = 0.45;
         // Maximum capacity for restaurant is 15 guests * 8 servers = 120
         // Max expected guest hours occur when q = 0.5 and p = 0.05
@@ -71,6 +73,9 @@ public class Main {
             case 4:
               strat4Data.add(meanResults);
               break;
+            case 5:
+              strat5Data.add(meanResults);
+              break;
           }
 
           // Adjust p
@@ -87,11 +92,13 @@ public class Main {
         String strat2FileName = "assignmentStrategy_2.csv";
         String strat3FileName = "assignmentStrategy_3.csv";
         String strat4FileName = "assignmentStrategy_4.csv";
+        String strat5FileName = "assignmentStrategy_5.csv";
 
         fWriter_1 = new FileWriter(strat1FileName);
         fWriter_2 = new FileWriter(strat2FileName);
         fWriter_3 = new FileWriter(strat3FileName);
         fWriter_4 = new FileWriter(strat4FileName);
+        fWriter_5 = new FileWriter(strat5FileName);
 
         for (Double[] doubles : strat1Data) 
         {
@@ -146,6 +153,19 @@ public class Main {
           fWriter_4.append(String.valueOf(doubles[modeIndex]));
           fWriter_4.append("\n");
         }
+        for (Double[] doubles : strat5Data) 
+        {
+          fWriter_5.append(String.valueOf(doubles[pIndex]));
+          fWriter_5.append(",");
+          fWriter_5.append(String.valueOf(doubles[seatingDelayIndex]));
+          fWriter_5.append(",");
+          fWriter_5.append(String.valueOf(doubles[serverDelayIndex]));
+          fWriter_5.append(",");
+          fWriter_5.append(String.valueOf(doubles[abandonRateIndex]));
+          fWriter_5.append(",");
+          fWriter_5.append(String.valueOf(doubles[modeIndex]));
+          fWriter_5.append("\n");
+        }
       } 
       catch (Exception ex) { System.out.println("something went wrong");}
        // flush and close 
@@ -161,6 +181,8 @@ public class Main {
           fWriter_3.close();
           fWriter_4.flush();
           fWriter_4.close();
+          fWriter_5.flush();
+          fWriter_5.close();
         } catch (Exception e){System.out.println("something went wrong");}
       }
 
@@ -242,12 +264,16 @@ public class Main {
       double abandonedRate = 1.0 * m.getAbandonedCount() / totalGuestCount;
       double seatDelay     = 1.0 * seatingDelay / departureCount;
       double servDelay     = 1.0 * serverDelay / departureCount;
-      
-      //System.out.println(m.printRestaurantStatus(time, 0));
-     // System.out.println("Abandoned rate: " + (1.0 * m.getAbandonedCount() / totalGuestCount));
-     // System.out.println("Seating delay: " + (1.0 * seatingDelay / departureCount));
-     // System.out.println("Server delay: " + (1.0 * serverDelay / departureCount));
-      //System.out.println("Guest hours average: " + (1.0 * guestHours / timeCap));
+      // System.out.println("\n");
+      // System.out.println("");
+      // System.out.println("Mode: " + mode);
+      // System.out.println("P = " + (float)p);
+      // System.out.println("Q = " + q + "\n");
+      // System.out.println(m.printRestaurantStatus(time, 0));
+      // System.out.println("Abandoned rate: " + (1.0 * m.getAbandonedCount() / totalGuestCount));
+      // System.out.println("Seating delay: " + (1.0 * seatingDelay / departureCount));
+      // System.out.println("Server delay: " + (1.0 * serverDelay / departureCount));
+      // System.out.println("Guest hours average: " + (1.0 * guestHours / timeCap));
 
       String[] results = new String[]{
           String.valueOf(p),
