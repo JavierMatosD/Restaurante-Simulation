@@ -88,7 +88,6 @@ public class Manager{
   /**
    * Happy Customer AND Happy Server Strategy <p>
    * Assigns tables to the least busy server even if all servers are at full capacity.
-   * No seating delay and no abandons, but at the potential cost of server delay
    * @param time
    */
   public void assignTablesLeastBusy(int time) {
