@@ -1,6 +1,6 @@
 public class Table{
    
-  public int rArrival, sArrival, guests, seatingDelay, serverDelay, length; //Best practice would be to have these be private and define get methods, but I don't think it matters in this instance.
+  public int rArrival, sArrival, guests, seatingDelay, serverDelay, length; //Since this is a helper class we will let these variables be public rather than writing get methods for them
   private final int seatingAbandonment = 2; //customers willing to wait up to 2 hours to be seated
   //private final serverAbandonmentMultiplier = 1.5;
   
@@ -33,6 +33,10 @@ public class Table{
     
     serverDelay = (int)(length*serverMultiplier)-length; //server delay = difference between actual length with server delay and original length party would have stayed at restaurant
     length      = (int)(length * serverMultiplier); //update length to reflect server delay
+    
+    /*if(serverDelay > seatingAbandonment)
+     return false;
+    */
     
     return true;
   }

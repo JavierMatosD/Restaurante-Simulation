@@ -30,7 +30,7 @@ public class Server{
     
     for(int i = 0; i < tables.size(); i++){
       
-      if(tables.get(i).sArrival + tables.get(i).length == time){
+      if(tables.get(i).sArrival + tables.get(i).length <= time){
         departures.add(departTable(i));
         i--;
       }

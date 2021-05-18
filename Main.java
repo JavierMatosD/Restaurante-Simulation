@@ -4,51 +4,55 @@ import java.util.ArrayList;
 
 public class Main {
     public static void main(String[] args){
-              
+            
+      //System.out.println(getExpectedGuestHoursRate(.05,.5));
+
       int mode        = 1;
+      int modeCount = 5;
       int timeCap     = 10000;
       int serverCount = 10;
-      double p        = 0.45;
+      double p        = 0.15;
       double q        = 0.50;
       
-      ArrayList<Double[]> strat1Data = new ArrayList<>();
-      ArrayList<Double[]> strat2Data = new ArrayList<>();
-      ArrayList<Double[]> strat3Data = new ArrayList<>();
-      ArrayList<Double[]> strat4Data = new ArrayList<>();
-      ArrayList<Double[]> strat5Data = new ArrayList<>();
-
+      ArrayList<ArrayList<Double[]>> stratData = new ArrayList<ArrayList<Double[]>>();
+      for(int i = 0; i < modeCount; i++){
+        stratData.add(new ArrayList<Double[]>());
+      }
+     
       int pIndex            = 0;
       int seatingDelayIndex = 1;
       int serverDelayIndex  = 2;
       int abandonRateIndex  = 3;
-      int modeIndex         = 4;
-      FileWriter fWriter_1 = null;
-      FileWriter fWriter_2 = null;
-      FileWriter fWriter_3 = null;
-      FileWriter fWriter_4 = null;
-      FileWriter fWriter_5 = null;
-
-      int numSimulations = 5;
-      // Run simulation for all 4 strategies
-      while (mode <= 5) {
-        p = 0.45;
-        // Maximum capacity for restaurant is 15 guests * 8 servers = 120
+      int departureCountIndex = 4;
+      int modeIndex         = 5;
+      
+      FileWriter fWriter = null;
+      int numSimulations = 10;
+      
+      // Run simulation for all strategies
+      while (mode <= modeCount) {
+        p = 0.15;
+        // Maximum capacity for restaurant is 10 guests * 10 servers = 100
         // Max expected guest hours occur when q = 0.5 and p = 0.05
-        while (p > 0.05) {
+        while (p >= 0.05) {
           double averageSeatingDelay = 0;
           double averageServerDelay = 0;
           double averageAbandonmentRate = 0;
+          double averageDepartureCount = 0;
 
           // Run simulation 100 times
           int i = 1;
           while (i <= numSimulations) {
 
+            //System.out.println(i);
+            
             // run 
             String[] results = simulation(mode, timeCap, serverCount, p, q);
 
             averageSeatingDelay    += Double.parseDouble(results[seatingDelayIndex]);
             averageServerDelay     += Double.parseDouble(results[serverDelayIndex]);
             averageAbandonmentRate += Double.parseDouble(results[abandonRateIndex]);
+            averageDepartureCount += Double.parseDouble(results[departureCountIndex]);
             i++;
           }
 
@@ -56,30 +60,15 @@ public class Main {
           averageServerDelay     = averageServerDelay     / numSimulations;
           averageSeatingDelay    = averageSeatingDelay    / numSimulations;
           averageAbandonmentRate = averageAbandonmentRate / numSimulations;
+          averageDepartureCount = averageDepartureCount / numSimulations;
 
           // Add results to our data
-          Double[] meanResults = new Double[] { p, averageSeatingDelay, averageServerDelay, averageAbandonmentRate, (double) mode};
+          Double[] meanResults = new Double[] { p, averageSeatingDelay, averageServerDelay, averageAbandonmentRate, averageDepartureCount, (double) mode};
 
-          switch (mode) {
-            case 1:
-              strat1Data.add(meanResults);
-              break;
-            case 2:
-              strat2Data.add(meanResults);
-              break;
-            case 3:
-              strat3Data.add(meanResults);
-              break;
-            case 4:
-              strat4Data.add(meanResults);
-              break;
-            case 5:
-              strat5Data.add(meanResults);
-              break;
-          }
+          stratData.get(mode-1).add(meanResults);
 
           // Adjust p
-          p -= 0.05;
+          p -= 0.01;
         }
 
         // switch modes
@@ -88,102 +77,34 @@ public class Main {
       // Write to fWriter
       try 
       {
-        String strat1FileName = "assignmentStrategy_1.csv";
-        String strat2FileName = "assignmentStrategy_2.csv";
-        String strat3FileName = "assignmentStrategy_3.csv";
-        String strat4FileName = "assignmentStrategy_4.csv";
-        String strat5FileName = "assignmentStrategy_5.csv";
 
-        fWriter_1 = new FileWriter(strat1FileName);
-        fWriter_2 = new FileWriter(strat2FileName);
-        fWriter_3 = new FileWriter(strat3FileName);
-        fWriter_4 = new FileWriter(strat4FileName);
-        fWriter_5 = new FileWriter(strat5FileName);
-
-        for (Double[] doubles : strat1Data) 
-        {
-          fWriter_1.append(String.valueOf(doubles[pIndex]));
-          fWriter_1.append(",");
-          fWriter_1.append(String.valueOf(doubles[seatingDelayIndex]));
-          fWriter_1.append(",");
-          fWriter_1.append(String.valueOf(doubles[serverDelayIndex]));
-          fWriter_1.append(",");
-          fWriter_1.append(String.valueOf(doubles[abandonRateIndex]));
-          fWriter_1.append(",");
-          fWriter_1.append(String.valueOf(doubles[modeIndex]));
-          fWriter_1.append("\n");
-        }
-        
-        for (Double[] doubles : strat2Data) 
-        {
-          fWriter_2.append(String.valueOf(doubles[pIndex]));
-          fWriter_2.append(",");
-          fWriter_2.append(String.valueOf(doubles[seatingDelayIndex]));
-          fWriter_2.append(",");
-          fWriter_2.append(String.valueOf(doubles[serverDelayIndex]));
-          fWriter_2.append(",");
-          fWriter_2.append(String.valueOf(doubles[abandonRateIndex]));
-          fWriter_2.append(",");
-          fWriter_2.append(String.valueOf(doubles[modeIndex]));
-          fWriter_2.append("\n");
-        }
-        for (Double[] doubles : strat3Data) 
-        {
-          fWriter_3.append(String.valueOf(doubles[pIndex]));
-          fWriter_3.append(",");
-          fWriter_3.append(String.valueOf(doubles[seatingDelayIndex]));
-          fWriter_3.append(",");
-          fWriter_3.append(String.valueOf(doubles[serverDelayIndex]));
-          fWriter_3.append(",");
-          fWriter_3.append(String.valueOf(doubles[abandonRateIndex]));
-          fWriter_3.append(",");
-          fWriter_3.append(String.valueOf(doubles[modeIndex]));
-          fWriter_3.append("\n");
-        }
-        for (Double[] doubles : strat4Data) 
-        {
-          fWriter_4.append(String.valueOf(doubles[pIndex]));
-          fWriter_4.append(",");
-          fWriter_4.append(String.valueOf(doubles[seatingDelayIndex]));
-          fWriter_4.append(",");
-          fWriter_4.append(String.valueOf(doubles[serverDelayIndex]));
-          fWriter_4.append(",");
-          fWriter_4.append(String.valueOf(doubles[abandonRateIndex]));
-          fWriter_4.append(",");
-          fWriter_4.append(String.valueOf(doubles[modeIndex]));
-          fWriter_4.append("\n");
-        }
-        for (Double[] doubles : strat5Data) 
-        {
-          fWriter_5.append(String.valueOf(doubles[pIndex]));
-          fWriter_5.append(",");
-          fWriter_5.append(String.valueOf(doubles[seatingDelayIndex]));
-          fWriter_5.append(",");
-          fWriter_5.append(String.valueOf(doubles[serverDelayIndex]));
-          fWriter_5.append(",");
-          fWriter_5.append(String.valueOf(doubles[abandonRateIndex]));
-          fWriter_5.append(",");
-          fWriter_5.append(String.valueOf(doubles[modeIndex]));
-          fWriter_5.append("\n");
+        for(int i = 0; i < stratData.size(); i++){
+          
+          fWriter = new FileWriter("assignmentStrategy_" + (i+1) + ".csv");
+          
+          for (Double[] doubles : stratData.get(i)){
+            fWriter.append(String.valueOf(doubles[pIndex]));
+            fWriter.append(",");
+            fWriter.append(String.valueOf(doubles[seatingDelayIndex]));
+            fWriter.append(",");
+            fWriter.append(String.valueOf(doubles[serverDelayIndex]));
+            fWriter.append(",");
+            fWriter.append(String.valueOf(doubles[abandonRateIndex]));
+            fWriter.append(",");
+            fWriter.append(String.valueOf(doubles[departureCountIndex]));
+            fWriter.append(",");
+            fWriter.append(String.valueOf(doubles[modeIndex]));
+            fWriter.append("\n");
+          }
+          fWriter.flush();
+          fWriter.close();
         }
       } 
-      catch (Exception ex) { System.out.println("something went wrong");}
+      catch (Exception ex) { System.out.println(ex.toString());}
        // flush and close 
       finally 
       {
-        try 
-        {
-          fWriter_1.flush();
-          fWriter_1.close();
-          fWriter_2.flush();
-          fWriter_2.close();
-          fWriter_3.flush();
-          fWriter_3.close();
-          fWriter_4.flush();
-          fWriter_4.close();
-          fWriter_5.flush();
-          fWriter_5.close();
-        } catch (Exception e){System.out.println("something went wrong");}
+        System.out.println("Finished :)");
       }
 
       /**
@@ -192,6 +113,7 @@ public class Main {
        * to keep up with the expected incoming load.
        */
       //System.out.println("Theoretical expected guest hours rate: " + getExpectedGuestHoursRate(p,q));
+      
     }
     
 
@@ -228,9 +150,9 @@ public class Main {
 
           //restaurant delay = delay in being seated upon arriving
           //server delay = delay in being served due to over capacity server
-          seatingDelay += departures.get(i).seatingDelay;
-          serverDelay += departures.get(i).serverDelay;
-          departureCount++;
+          seatingDelay += departures.get(i).seatingDelay * departures.get(i).guests;
+          serverDelay += departures.get(i).serverDelay * departures.get(i).guests;
+          departureCount += departures.get(i).guests;
         }
 
         // We could try subtracting one here so that it's possible that 0 tables arrive in a given hour
@@ -276,12 +198,12 @@ public class Main {
       // System.out.println("Guest hours average: " + (1.0 * guestHours / timeCap));
 
       String[] results = new String[]{
-          String.valueOf(p),
+        String.valueOf(p),
           String.valueOf(seatDelay),
           String.valueOf(servDelay),
-          String.valueOf(abandonedRate)
+          String.valueOf(abandonedRate),
+          String.valueOf(departureCount)
       };
-
 
       return results;
     }
