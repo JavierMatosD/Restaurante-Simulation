@@ -1,6 +1,7 @@
-public class Table{
-   
-  public int rArrival, sArrival, guests, seatingDelay, serverDelay, length; //Since this is a helper class we will let these variables be public rather than writing get methods for them
+public class Table {
+  
+  //Since this is a helper class we will let these variables be public rather than writing get methods for them
+  public int rArrival, sArrival, guests, seatingDelay, serverDelay, length; 
   private final int seatingAbandonment = 2; //customers willing to wait up to 2 hours to be seated
   //private final serverAbandonmentMultiplier = 1.5;
   
@@ -25,19 +26,16 @@ public class Table{
    * @return 
    */
   public boolean seated(double serverMultiplier, int time){
-    sArrival = time;
+    sArrival     = time;
     seatingDelay = sArrival-rArrival; //restaurant delay = delay between arrival at restaurant and being seated
     
     if(seatingDelay > seatingAbandonment)
       return false;
-    
-    serverDelay = (int)(length*serverMultiplier)-length; //server delay = difference between actual length with server delay and original length party would have stayed at restaurant
-    length      = (int)(length * serverMultiplier); //update length to reflect server delay
-    
-    /*if(serverDelay > seatingAbandonment)
-     return false;
-    */
-    
+
+    //server delay = difference between actual length with server delay and original length party would have stayed at restaurant
+    serverDelay = (int)(length*serverMultiplier)-length; 
+    length     += serverDelay; //update length to reflect server delay
+
     return true;
   }
   // ===================================

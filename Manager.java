@@ -194,10 +194,9 @@ public class Manager{
   }
 
   private int getSecondLeastBusyServer() {
-    int leastBusyIndex = getLeastBusyServerIndex();
-
+    int leastBusyIndex      = getLeastBusyServerIndex();
     int secondLeastCapacity = Integer.MAX_VALUE;
-    int secondLeastIndex = 0;
+    int secondLeastIndex    = 0;
     for (int i = 0; i < servers.size(); i++) 
     {
       // Skip if server is least busy

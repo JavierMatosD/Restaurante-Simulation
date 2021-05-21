@@ -7,27 +7,28 @@ public class Main {
             
       //System.out.println(getExpectedGuestHoursRate(.05,.5));
 
-      int mode        = 1;
-      int modeCount = 5;
-      int timeCap     = 10000;
-      int serverCount = 10;
-      double p        = 0.15;
-      double q        = 0.50;
+      int mode           = 1;
+      int modeCount      = 5;
+      int timeCap        = 10000;
+      int serverCount    = 10;
+      int numSimulations = 10;
+      double p           = 0.15;
+      double q           = 0.50;
       
       ArrayList<ArrayList<Double[]>> stratData = new ArrayList<ArrayList<Double[]>>();
       for(int i = 0; i < modeCount; i++){
         stratData.add(new ArrayList<Double[]>());
       }
      
-      int pIndex            = 0;
-      int seatingDelayIndex = 1;
-      int serverDelayIndex  = 2;
-      int abandonRateIndex  = 3;
+      int pIndex              = 0;
+      int seatingDelayIndex   = 1;
+      int serverDelayIndex    = 2;
+      int abandonRateIndex    = 3;
       int departureCountIndex = 4;
-      int modeIndex         = 5;
+      int modeIndex           = 5;
       
       FileWriter fWriter = null;
-      int numSimulations = 10;
+      
       
       // Run simulation for all strategies
       while (mode <= modeCount) {
@@ -52,7 +53,7 @@ public class Main {
             averageSeatingDelay    += Double.parseDouble(results[seatingDelayIndex]);
             averageServerDelay     += Double.parseDouble(results[serverDelayIndex]);
             averageAbandonmentRate += Double.parseDouble(results[abandonRateIndex]);
-            averageDepartureCount += Double.parseDouble(results[departureCountIndex]);
+            averageDepartureCount  += Double.parseDouble(results[departureCountIndex]);
             i++;
           }
 
@@ -60,7 +61,7 @@ public class Main {
           averageServerDelay     = averageServerDelay     / numSimulations;
           averageSeatingDelay    = averageSeatingDelay    / numSimulations;
           averageAbandonmentRate = averageAbandonmentRate / numSimulations;
-          averageDepartureCount = averageDepartureCount / numSimulations;
+          averageDepartureCount  = averageDepartureCount / numSimulations;
 
           // Add results to our data
           Double[] meanResults = new Double[] { p, averageSeatingDelay, averageServerDelay, averageAbandonmentRate, averageDepartureCount, (double) mode};
@@ -130,11 +131,11 @@ public class Main {
      */
     public static String[] simulation(int mode, int timeCap, int serverCount, double p, double q) {
 
-      int seatingDelay = 0;
-      int serverDelay = 0;
-      int departureCount = 0;
-      int guestHours = 0;
-      int time = 0;
+      int seatingDelay    = 0;
+      int serverDelay     = 0;
+      int departureCount  = 0;
+      int guestHours      = 0;
+      int time            = 0;
       int totalGuestCount = 0;
       int arrivalCount;
 
@@ -150,8 +151,8 @@ public class Main {
 
           //restaurant delay = delay in being seated upon arriving
           //server delay = delay in being served due to over capacity server
-          seatingDelay += departures.get(i).seatingDelay * departures.get(i).guests;
-          serverDelay += departures.get(i).serverDelay * departures.get(i).guests;
+          seatingDelay   += departures.get(i).seatingDelay * departures.get(i).guests;
+          serverDelay    += departures.get(i).serverDelay * departures.get(i).guests;
           departureCount += departures.get(i).guests;
         }
 
@@ -165,12 +166,9 @@ public class Main {
          * The expected value of the guestCount = 1/q = expected hours the party will stay.
          */
         for (int i = 0; i < arrivalCount; i++) {
-          int guestCount = geometric(q);
-          /*if(guestCount > 30){
-            System.out.println("Big one + " + guestCount); 
-          }*/
-          int length = geometric(1.0 / guestCount);
-          guestHours += guestCount * length;
+          int guestCount   = geometric(q);
+          int length       = geometric(1.0 / guestCount);
+          guestHours      += guestCount * length;
           totalGuestCount += guestCount;
 
           // Generate a new party (aka table aka job).
