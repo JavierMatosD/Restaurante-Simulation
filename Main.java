@@ -5,18 +5,20 @@ import java.util.ArrayList;
 public class Main {
     public static void main(String[] args){
             
-      //System.out.println(getExpectedGuestHoursRate(.05,.5));
 
-      int mode           = 1; //First mode to test
-      int modeCount      = 6; //Final mode to test
+      int mode           = 1;     //First mode to test
+      int modeCount      = 6;     //Final mode to test
       int timeCap        = 10000; //Number of virtual hours in the simulation
-      int serverCount    = 10; //Number of servers in the restaurant
-      int numSimulations = 10; //Number of simulations to run & average for each mode and each value of p
+      int serverCount    = 10;    //Number of servers in the restaurant
+      int numSimulations = 10;    //Number of simulations to run & average for each mode and each value of p
       double p           = 0.15;
-      double q           = 0.50;
+      double q = 0.50;
       
+      // Stores raw data
       ArrayList<ArrayList<Double[]>> stratData = new ArrayList<ArrayList<Double[]>>();
-      for(int i = 0; i < modeCount; i++){
+
+      for (int i = 0; i < modeCount; i++) 
+      {
         stratData.add(new ArrayList<Double[]>());
       }
      
@@ -27,25 +29,26 @@ public class Main {
       int departureCountIndex = 4;
       int modeIndex           = 5;
       
-      FileWriter fWriter = null;
+      FileWriter fWriter      = null;
       
       
       // Run simulation for all strategies
-      while (mode <= modeCount) {
+      while (mode <= modeCount) 
+      {
         p = 0.15;
         // Maximum capacity for restaurant is 10 guests * 10 servers = 100
         // Max expected guest hours occur when q = 0.5 and p = 0.05
-        while (p >= 0.05) {
-          double averageSeatingDelay = 0;
-          double averageServerDelay = 0;
+        while (p >= 0.05) 
+        {
+          double averageSeatingDelay    = 0;
+          double averageServerDelay     = 0;
           double averageAbandonmentRate = 0;
-          double averageDepartureCount = 0;
+          double averageDepartureCount  = 0;
 
           // Run simulation 100 times
           int i = 1;
-          while (i <= numSimulations) {
-
-            //System.out.println(i);
+          while (i <= numSimulations) 
+          {
             
             // run 
             String[] results = simulation(mode, timeCap, serverCount, p, q);
@@ -61,10 +64,18 @@ public class Main {
           averageServerDelay     = averageServerDelay     / numSimulations;
           averageSeatingDelay    = averageSeatingDelay    / numSimulations;
           averageAbandonmentRate = averageAbandonmentRate / numSimulations;
-          averageDepartureCount  = averageDepartureCount / numSimulations;
+          averageDepartureCount  = averageDepartureCount  / numSimulations;
 
           // Add results to our data
-          Double[] meanResults = new Double[] { p, averageSeatingDelay, averageServerDelay, averageAbandonmentRate, averageDepartureCount, (double) mode};
+          Double[] meanResults = new Double[] 
+          {
+              p,
+              averageSeatingDelay, 
+              averageServerDelay, 
+              averageAbandonmentRate, 
+              averageDepartureCount, 
+              (double) mode 
+          };
 
           stratData.get(mode-1).add(meanResults);
 
@@ -102,18 +113,10 @@ public class Main {
         }
       } 
       catch (Exception ex) { System.out.println(ex.toString());}
-       // flush and close 
       finally 
       {
         System.out.println("Finished :)");
       }
-
-      /**
-       * The expected number of guest hours generated per hour = (1/p)*((2-q/q^2). In other words, E[X] * E[Y^2] where X ~ Geometric(p) and Y ~ Geometric(q).
-       * Crucially, however, if servers become overburdened during the course of the simulation they might slow down and no longer be able
-       * to keep up with the expected incoming load.
-       */
-      //System.out.println("Theoretical expected guest hours rate: " + getExpectedGuestHoursRate(p,q));
       
     }
     
@@ -184,23 +187,14 @@ public class Main {
       double abandonedRate = 1.0 * m.getAbandonedCount() / totalGuestCount;
       double seatDelay     = 1.0 * seatingDelay / departureCount;
       double servDelay     = 1.0 * serverDelay / departureCount;
-      // System.out.println("\n");
-      // System.out.println("");
-      // System.out.println("Mode: " + mode);
-      // System.out.println("P = " + (float)p);
-      // System.out.println("Q = " + q + "\n");
-      // System.out.println(m.printRestaurantStatus(time, 0));
-      // System.out.println("Abandoned rate: " + (1.0 * m.getAbandonedCount() / totalGuestCount));
-      // System.out.println("Seating delay: " + (1.0 * seatingDelay / departureCount));
-      // System.out.println("Server delay: " + (1.0 * serverDelay / departureCount));
-      // System.out.println("Guest hours average: " + (1.0 * guestHours / timeCap));
 
-      String[] results = new String[]{
+      String[] results = new String[] 
+      {
         String.valueOf(p),
-          String.valueOf(seatDelay),
-          String.valueOf(servDelay),
-          String.valueOf(abandonedRate),
-          String.valueOf(departureCount)
+        String.valueOf(seatDelay),
+        String.valueOf(servDelay),
+        String.valueOf(abandonedRate),
+        String.valueOf(departureCount)
       };
 
       return results;
@@ -214,14 +208,16 @@ public class Main {
      * @param prob : probability
      * @return int : RV
      */
-    public static int geometric(double prob) {
+    public static int geometric(double prob) 
+    {
 
       Random r = new Random();
       double a = r.nextDouble(); // Double to compare to the cdf
       int i    = 0;
 
       // Find and return the value of i at which our random variable is smaller than the cdf
-      while (true) {
+      while (true) 
+      {
         i++;
         double cdf = 1.0 - Math.pow((1.0 - prob), i + 0.0);
         if (a < cdf) 
@@ -236,7 +232,8 @@ public class Main {
      * @param q
      * @return (double) the expected rate of arrival for incoming guests
      */
-    public static double getExpectedGuestHoursRate(double p, double q){
+    public static double getExpectedGuestHoursRate(double p, double q) 
+    {
       return ((2.0-q)/Math.pow(q,2.0))*(1.0/p);
     }
 }

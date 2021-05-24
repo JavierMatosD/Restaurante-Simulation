@@ -202,26 +202,31 @@ public class Manager{
   public void assignTablesMatchCapacity(int time) {
 
     //First, seat tables in order while not overburdening any servers
-    while (unseatedTables.size() > 0 && servers.get(getLeastBusyServerIndex()).getAvailableCapacity() > unseatedTables.peek().guests)
+    while (unseatedTables.size() > 0
+        && servers.get(getLeastBusyServerIndex()).getAvailableCapacity() > unseatedTables.peek().guests)
       abandonedCount += servers.get(getLeastBusyServerIndex()).seatTable(unseatedTables.remove(), time);
-    
+
     //Second, if there are still unseated tables, iterate through all remaining tables and allow smaller tables to 'skip the line' in order to be seated immediately
-    if(unseatedTables.size() > 0){ 
+    if (unseatedTables.size() > 0) {
       Table[] unseatedTableArr = unseatedTables.toArray(new Table[unseatedTables.size()]);
-      for(int i = 0; i < unseatedTableArr.length; i++){
-        if(unseatedTableArr[i].guests <= servers.get(getLeastBusyServerIndex()).getAvailableCapacity()){
+      for (int i = 0; i < unseatedTableArr.length; i++) {
+        if (unseatedTableArr[i].guests <= servers.get(getLeastBusyServerIndex()).getAvailableCapacity()) {
           Table t = unseatedTableArr[i];
           abandonedCount += servers.get(getLeastBusyServerIndex()).seatTable(t, time);
           unseatedTables.remove(t);
         }
       }
     }
-    
+
     //Finally third, if there are still any unseated tables remaining and any servers who are not overburdened, go ahead and seat them. This step is identical to 'assignTablesLeastBusy'
     while (unseatedTables.size() > 0 && servers.get(getLeastBusyServerIndex()).getAvailableCapacity() > 0)
       abandonedCount += servers.get(getLeastBusyServerIndex()).seatTable(unseatedTables.remove(), time);
   }
-
+  
+  /**
+   * Utility method that returns the second least busy server
+   * @return
+   */
   private int getSecondLeastBusyServer() {
     int leastBusyIndex      = getLeastBusyServerIndex();
     int secondLeastCapacity = Integer.MAX_VALUE;
