@@ -7,11 +7,11 @@ public class Main {
             
       //System.out.println(getExpectedGuestHoursRate(.05,.5));
 
-      int mode           = 1;
-      int modeCount      = 5;
-      int timeCap        = 10000;
-      int serverCount    = 10;
-      int numSimulations = 10;
+      int mode           = 1; //First mode to test
+      int modeCount      = 6; //Final mode to test
+      int timeCap        = 10000; //Number of virtual hours in the simulation
+      int serverCount    = 10; //Number of servers in the restaurant
+      int numSimulations = 10; //Number of simulations to run & average for each mode and each value of p
       double p           = 0.15;
       double q           = 0.50;
       

@@ -77,8 +77,10 @@ public class Manager{
         assignTablesInstantly(time);
         break;
       case 5:
-        covidStrategy(time);
+        assignTablesCovidStrategy(time);
         break;
+      case 6:
+        assignTablesMatchCapacity(time); //non FIFO
       default:
         break;
     }
@@ -87,12 +89,12 @@ public class Manager{
   
   /**
    * Happy Customer AND Happy Server Strategy <p>
-   * Assigns tables to the least busy server even if all servers are at full capacity.
+   * Assigns tables to the least busy server that is not currently over capacity
    * @param time
    */
   public void assignTablesLeastBusy(int time) {
       while (unseatedTables.size() > 0 && servers.get(getLeastBusyServerIndex()).getAvailableCapacity() > 0)
-      abandonedCount += servers.get(getLeastBusyServerIndex()).seatTable(unseatedTables.remove(), time);
+        abandonedCount += servers.get(getLeastBusyServerIndex()).seatTable(unseatedTables.remove(), time);
   }
   
   /**
@@ -138,7 +140,7 @@ public class Manager{
    * Tables will stay with a 50% chance if their party can be split between two servers. Else they abandon
    * @param time
    */
-  public void covidStrategy(int time) {
+  public void assignTablesCovidStrategy(int time) {
 
     while (!unseatedTables.isEmpty()) 
     {
@@ -191,6 +193,33 @@ public class Manager{
       }
      
     }
+  }
+  
+  /**
+     * Match tables strategy - skips large tables at front of line if capacity is available to serve smaller tables who arrived later
+     * @param time - current time
+     */
+  public void assignTablesMatchCapacity(int time) {
+
+    //First, seat tables in order while not overburdening any servers
+    while (unseatedTables.size() > 0 && servers.get(getLeastBusyServerIndex()).getAvailableCapacity() > unseatedTables.peek().guests)
+      abandonedCount += servers.get(getLeastBusyServerIndex()).seatTable(unseatedTables.remove(), time);
+    
+    //Second, if there are still unseated tables, iterate through all remaining tables and allow smaller tables to 'skip the line' in order to be seated immediately
+    if(unseatedTables.size() > 0){ 
+      Table[] unseatedTableArr = unseatedTables.toArray(new Table[unseatedTables.size()]);
+      for(int i = 0; i < unseatedTableArr.length; i++){
+        if(unseatedTableArr[i].guests <= servers.get(getLeastBusyServerIndex()).getAvailableCapacity()){
+          Table t = unseatedTableArr[i];
+          abandonedCount += servers.get(getLeastBusyServerIndex()).seatTable(t, time);
+          unseatedTables.remove(t);
+        }
+      }
+    }
+    
+    //Finally third, if there are still any unseated tables remaining and any servers who are not overburdened, go ahead and seat them. This step is identical to 'assignTablesLeastBusy'
+    while (unseatedTables.size() > 0 && servers.get(getLeastBusyServerIndex()).getAvailableCapacity() > 0)
+      abandonedCount += servers.get(getLeastBusyServerIndex()).seatTable(unseatedTables.remove(), time);
   }
 
   private int getSecondLeastBusyServer() {
